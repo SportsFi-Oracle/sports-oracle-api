@@ -4,9 +4,9 @@ Welcome to the Sports Oracle API! This API provides sports data and statistics f
 
 ## Features
 
-- Retrieve live scores and updates
+- Retrieve live prices and liquidity metrics
 - Access historical data and statistics
-- Get information on teams and players
+- Coming Soon: Get information on teams and players
 
 ## Installation
 
