@@ -63,7 +63,7 @@ const calculateTwap = (tickCumulatives, period) => {
     }
   });
   
-  app.get("/api/metrics", async (req, res) => {
+  app.get("/api/liquidity", async (req, res) => {
     try {
       const axLiquidity = await fetchLiquidity(AX_USDC_POOL);
       const sxLiquidity = await fetchLiquidity(SX_USDC_POOL);
