@@ -1,5 +1,7 @@
 # Sports Oracle API
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/fc0c23a2-fe04-4a0e-93a3-263f97fae7bc/deploy-status)](https://app.netlify.com/sites/sportsfi-prices-api/deploys)
+
 Welcome to the Sports Oracle API! This API provides sports data and statistics for various sports and leagues.
 
 ## Features
