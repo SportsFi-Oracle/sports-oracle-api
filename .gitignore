@@ -36,5 +36,4 @@ jspm_packages/
 Thumbs.db
 
 # Build directories
-dist/
 build/
