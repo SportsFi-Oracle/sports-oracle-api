@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "an oracle for sports digital assets",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "webpack serve --mode development --open",
     "dev": "nodemon index.js",
