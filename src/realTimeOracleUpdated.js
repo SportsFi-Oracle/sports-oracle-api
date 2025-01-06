@@ -69,11 +69,20 @@ const updateOracle = async () => {
     try {
       for (const [asset, poolAddress] of Object.entries(POOLS)) {
         try {
-          const price = await fetchTwap(poolAddress);
-          console.log(`Fetched price for ${asset}: ${price}`);
+
+            const rawPrice = await fetchTwap(poolAddress);
+            let formattedPrice;
+        
+            if (asset === "SX") {
+              formattedPrice = Math.floor(rawPrice / 1e18); // Scale down for SX
+            } else {
+              formattedPrice = Math.floor(rawPrice); // Regular rounding for other assets
+            }
+        
+            console.log(`Fetched and formatted price for ${asset}: ${formattedPrice}`);
 
           // Update the oracle contract
-          const tx = await oracleContract.updatePrice(asset, Math.floor(price), {
+          const tx = await oracleContract.updatePrice(asset, Math.floor(formattedPrice), {
             gasLimit: 500000, // Adjust as needed
           });
           await tx.wait();
