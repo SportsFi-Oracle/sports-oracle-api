@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { ethers } from "ethers";
 import { oracleContract } from "../utils/index.js";
 
 // Initialize server
@@ -39,14 +40,21 @@ app.get("/api/prices/:asset", async (req, res) => {
   const { asset } = req.params;
   try {
     const rawPrice = await oracleContract.getPrice(asset.toUpperCase());
-    const price = formatPrice(rawPrice, asset.toUpperCase() === "SX" ? 18 : 6);
 
+    // Check if the result is valid
+    if (rawPrice === "0x" || rawPrice === 0) {
+      console.log(`Price error for asset: ${asset}`, rawPrice);
+      throw new Error(`Price not found for asset: ${asset}`);
+    }
+
+    const price = formatPrice(rawPrice, asset.toUpperCase() === "SX" ? 18 : 6);
     res.json({ asset, price });
   } catch (error) {
     console.error(`Error fetching price for ${asset}:`, error);
     res.status(500).json({ error: `Failed to fetch price for ${asset}` });
   }
 });
+
 
 export default app;
 
