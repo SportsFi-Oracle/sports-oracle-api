@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import oracleContract from "../utils/index.js";
+import { oracleContract } from "../utils/index.js";
 
 // Initialize server
 const app = express();
@@ -18,7 +18,7 @@ app.get("/api/status", (req, res) => {
 // Fetch Latest Prices for Assets
 app.get("/api/prices", async (req, res) => {
   try {
-    const assets = ["BTC", "ETH", "BNB", "USDT", "USDC", "DAI", "SX"];
+    const assets = ["BTC", "ETH", "USDT", "USDC", "SX"];
     const prices = {};
 
     for (const asset of assets) {
