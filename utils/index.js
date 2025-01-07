@@ -14,3 +14,8 @@ export const ORACLE_ABI = [
 // Setup ethers provider and contract instance
 export const provider = new ethers.JsonRpcProvider(RPC_URL);
 export const oracleContract = new ethers.Contract(ORACLE_CONTRACT_ADDRESS, ORACLE_ABI, provider);
+
+export const formatPrice = (rawPrice, decimals) => {
+  if (!rawPrice) return null;
+  return Number(rawPrice) / Math.pow(10, decimals); // Adjust decimals
+};
