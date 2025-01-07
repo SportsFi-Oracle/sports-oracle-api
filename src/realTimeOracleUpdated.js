@@ -71,6 +71,7 @@ const updateOracle = async () => {
         try {
 
             const rawPrice = await fetchTwap(poolAddress);
+            console.log(`Fetched raw price for ${asset} at ${poolAddress}: ${rawPrice}`);
             let formattedPrice;
         
             if (asset === "SX") {
@@ -86,7 +87,7 @@ const updateOracle = async () => {
             gasLimit: 500000, // Adjust as needed
           });
           await tx.wait();
-          console.log(`Updated price for ${asset} in the oracle.`);
+          console.log(`Updated price for ${asset} in the oracle at ${ORACLE_CONTRACT_ADDRESS}.`);
         } catch (error) {
           console.error(`Error processing ${asset}:`, error);
         }
