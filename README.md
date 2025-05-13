@@ -4,6 +4,8 @@
 
 Welcome to the Sports Oracle API! This API provides sports data and statistics for various sports and leagues.
 
+In one line, this project: Runs forever, waking up every 45 seconds to read a 60‑second TWAP from several Uniswap V3 pools and, only when the price has actually moved (or 10 minutes have passed), push the new value on‑chain to a custom Oracle contract.
+
 ## Features
 
 - Retrieve live prices and liquidity metrics

@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "yarn build && yarn serve && node src/realTimeOracleUpdated.js",
+    "start": " RPC_URL='https://rpc.toronto.sx.technology' yarn build && yarn serve && node src/realTimeOracleUpdated.js",
     "dev": "nodemon index.js",
     "serve": "node dist/bundle.cjs",
     "build": "node esbuild.config.mjs",
@@ -15,6 +15,7 @@
   "author": "kamto",
   "license": "ISC",
   "dependencies": {
+    "@uniswap/v3-sdk": "^3.25.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "esbuild": "^0.24.2",
