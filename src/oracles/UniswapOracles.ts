@@ -34,7 +34,23 @@ export class UniswapOracle {
     this.poolContract = new Contract(metadata.addr, IUniswapV3PoolABI.abi, readProvider);
   }
 
-  // Custom tickToPrice function; replace or extend this as needed
+  private async _observe(secondsAgo: number): Promise<Observation[]> {
+    const timestamps = [0, secondsAgo]
+  
+    const [tickCumulatives, secondsPerLiquidityCumulatives] =
+      await this.poolContract.observe(timestamps)
+  
+    const observations: Observation[] = timestamps.map((time, i) => {
+      return {
+        secondsAgo: time,
+        tickCumulative: BigInt(tickCumulatives[i]),
+        secondsPerLiquidityCumulativeX128: BigInt(
+          secondsPerLiquidityCumulatives[i]
+        ),
+      }
+    })
+    return observations
+  }
 
   private _calculateTWAP(observations: Observation[], pool: Pool) {
     const diffTickCumulative =
@@ -54,6 +70,30 @@ export class UniswapOracle {
     const secondsBetweenX128 = BigInt(secondsBetween) << BigInt(128)
   
     return secondsBetweenX128 / diffSecondsPerLiquidityX128
+  }
+
+  public async getAverages(): Promise<{
+    twap: Price<Token, Token>
+    twal: bigint
+  }> {
+    const secondsAgo = CurrentConfig.timeInterval
+    const observations: Observation[] = await this._observe(secondsAgo)
+  
+    const slot0 = await this.poolContract['slot0']()
+    const liquidity = await this.poolContract['liquidity']()
+    const pool = new Pool(
+      CurrentConfig.pool.token0,
+      CurrentConfig.pool.token1,
+      CurrentConfig.pool.fee,
+      slot0.sqrtPriceX96,
+      liquidity,
+      slot0.tick
+    )
+  
+    const twap = this._calculateTWAP(observations, pool)
+    const twal = this._calculateTWAL(observations)
+  
+    return { twap, twal }
   }
 }
 
