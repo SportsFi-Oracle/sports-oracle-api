@@ -1,7 +1,7 @@
-import { UniswapOracle, POOLS, PoolMetadata } from "./UniswapOracles";
+import { UniswapOracle } from "./UniswapOracles";
 import { Contract, ethers, BigNumberish } from "ethers";
-import { getSigner, readProvider, writeProvider } from "../../utils/utils";
-import { PRIVATE_KEY, TASK_INTERVAL_MS, THRESHOLD, FORCE_AFTER_MS, DECIMALS_ONCHAIN, ORACLE_CONTRACT_ADDRESS } from "../../utils/config";
+import { getSigner, readProvider, writeProvider, PoolMetadata } from "../../utils/utils";
+import { PRIVATE_KEY, TASK_INTERVAL_MS, THRESHOLD, FORCE_AFTER_MS, DECIMALS_ONCHAIN, ORACLE_CONTRACT_ADDRESS, POOLS } from "../../utils/config";
 
 const ORACLE_ABI = [
   "function updatePrice(string asset, uint256 price) public"
@@ -30,7 +30,7 @@ export class OracleManager {
   // Update one asset price on the oracle contract
   public async updateOne(asset: string): Promise<void> {
     const oracle = this.oracles[asset];
-    const price = await oracle.fetchTwapPrice();
+    const price = await oracle.getLatestPriceInUsd();
     const priceUint = this.toOnchainUint(price);
     // You can add thresholds and stale check here as needed.
     const tx = await this.oracleContract.updatePrice(asset, priceUint, { gasLimit: 150_000 });
