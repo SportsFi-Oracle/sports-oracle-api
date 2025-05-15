@@ -1,37 +1,21 @@
 import { Contract } from "ethers";
-import { Pool, tickToPrice } from "@uniswap/v3-sdk";
+import { FeeAmount, Pool, tickToPrice } from "@uniswap/v3-sdk";
 import { Price, Token } from '@uniswap/sdk-core'
 import IUniswapV3PoolABI from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
-import { readProvider } from "../../utils/utils";
+import { Observation, PoolMetadata, readProvider } from "../../utils/utils";
 import { ORACLE_CONTRACT_ADDRESS } from "../../utils/config";
 
 
 // Define observation metadata
-export interface Observation {
-  secondsAgo: number
-  tickCumulative: bigint
-  secondsPerLiquidityCumulativeX128: bigint
-}
 
-// Define pool metadata
-export interface PoolMetadata {
-  addr: string;
-  dec0: number;
-  dec1: number;
-  invert: boolean;
-}
-
-// Example pool definitions
-export const POOLS: Record<string, PoolMetadata> = {
-  BTC:  { addr: "0x99ac8cA7087fA4A2A1FB6357269965A2014ABc35", dec0: 6, dec1: 8, invert: true },
-  // add other pools
-};
 
 export class UniswapOracle {
   public poolContract: Contract;
+  public timeInterval: number;
   
   constructor(public asset: string, public metadata: PoolMetadata) {
     this.poolContract = new Contract(metadata.addr, IUniswapV3PoolABI.abi, readProvider);
+    this.timeInterval = 108 // uniswap default of 108 second time interval
   }
 
   private async _observe(secondsAgo: number): Promise<Observation[]> {
@@ -76,15 +60,15 @@ export class UniswapOracle {
     twap: Price<Token, Token>
     twal: bigint
   }> {
-    const secondsAgo = CurrentConfig.timeInterval
+    const secondsAgo = this.timeInterval
     const observations: Observation[] = await this._observe(secondsAgo)
   
     const slot0 = await this.poolContract['slot0']()
     const liquidity = await this.poolContract['liquidity']()
     const pool = new Pool(
-      CurrentConfig.pool.token0,
-      CurrentConfig.pool.token1,
-      CurrentConfig.pool.fee,
+      this.metadata.token0,
+      this.metadata.token1,
+      FeeAmount.MEDIUM, // hard coding medium fee amount for standardization, but this can be changed
       slot0.sqrtPriceX96,
       liquidity,
       slot0.tick
@@ -94,6 +78,11 @@ export class UniswapOracle {
     const twal = this._calculateTWAL(observations)
   
     return { twap, twal }
+  }
+
+  //** @return returns the latest price in USDC decimal notation */
+  public async getLatestPriceInUsd(): Promise<number> {
+    return 0;
   }
 }
 
