@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "an oracle for sports digital assets",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": " RPC_URL='https://rpc.toronto.sx.technology' yarn build && yarn serve && node src/realTimeOracleUpdated.js",
     "dev": "ts-node src/index.ts",
