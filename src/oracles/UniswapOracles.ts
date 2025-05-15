@@ -1,11 +1,17 @@
 import { Contract } from "ethers";
+import { Pool, tickToPrice } from "@uniswap/v3-sdk";
+import { Price, Token } from '@uniswap/sdk-core'
+import IUniswapV3PoolABI from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import { readProvider } from "../../utils/utils";
 import { ORACLE_CONTRACT_ADDRESS } from "../../utils/config";
 
-// Define ABI for the Uniswap pool, update as needed
-const UNISWAP_POOL_ABI = [
-  "function observe(uint32[]) view returns (int56[] tickCumulatives, uint160[] secondsPerLiquidityCumulativeX128)"
-];
+
+// Define observation metadata
+export interface Observation {
+  secondsAgo: number
+  tickCumulative: bigint
+  secondsPerLiquidityCumulativeX128: bigint
+}
 
 // Define pool metadata
 export interface PoolMetadata {
@@ -25,22 +31,30 @@ export class UniswapOracle {
   public poolContract: Contract;
   
   constructor(public asset: string, public metadata: PoolMetadata) {
-    this.poolContract = new Contract(metadata.addr, UNISWAP_POOL_ABI, readProvider);
+    this.poolContract = new Contract(metadata.addr, IUniswapV3PoolABI.abi, readProvider);
   }
 
   // Custom tickToPrice function; replace or extend this as needed
-  public tickToPrice(tick: number): number {
-    const ratio = Math.pow(1.0001, tick);
-    let price = ratio * 10 ** (this.metadata.dec1 - this.metadata.dec0);
-    if (this.metadata.invert) price = 1 / price;
-    return price;
-  }
 
-  // Get TWAP price
-  public async fetchTwapPrice(period = 60): Promise<number> {
-    const secondsAgos = [period, 0];
-    const [tickCumulatives] = await this.poolContract.observe(secondsAgos);
-    const tick = Number((tickCumulatives[1] - tickCumulatives[0]) / period);
-    return this.tickToPrice(tick);
+  private _calculateTWAP(observations: Observation[], pool: Pool) {
+    const diffTickCumulative =
+      observations[0].tickCumulative - observations[1].tickCumulative
+    const secondsBetween = observations[1].secondsAgo - observations[0].secondsAgo
+  
+    const averageTick = Number(diffTickCumulative / BigInt(secondsBetween))
+  
+    return tickToPrice(pool.token0, pool.token1, averageTick)
+  }
+  private _calculateTWAL(observations: Observation[]): bigint {
+    const diffSecondsPerLiquidityX128 =
+      observations[0].secondsPerLiquidityCumulativeX128 -
+      observations[1].secondsPerLiquidityCumulativeX128
+  
+    const secondsBetween = observations[1].secondsAgo - observations[0].secondsAgo
+    const secondsBetweenX128 = BigInt(secondsBetween) << BigInt(128)
+  
+    return secondsBetweenX128 / diffSecondsPerLiquidityX128
   }
 }
+
+// Developer's Note: Much of the code here was pulled from this reference: https://github.com/Uniswap/examples/blob/main/v3-sdk/oracle/src/libs/oracle.ts
