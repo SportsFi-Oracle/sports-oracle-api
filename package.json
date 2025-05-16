@@ -4,10 +4,10 @@
   "description": "an oracle for sports digital assets",
   "main": "index.js",
   "scripts": {
-    "start": " RPC_URL='https://rpc.toronto.sx.technology' yarn build && yarn serve && node src/realTimeOracleUpdated.js",
+    "start": " RPC_URL='https://eth.llamarpc.com' ts-node src/index.ts",
     "dev": "ts-node src/index.ts",
     "serve": "node dist/bundle.cjs",
-    "build": "node esbuild.config.mjs",
+    "build": "tsc",
     "test": "mocha test/**/*.test.js",
     "deploy": "yarn start && node src/realTimeOracleUpdated.js"
   },
