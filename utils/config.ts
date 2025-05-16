@@ -19,9 +19,7 @@ export const USDT_TOKEN: Token = new Token(1, "0xdAC17F958D2ee523a2206206994597C
 export const WSX_TOKEN: Token = new Token(1, "0xbe9F61555F50DD6167f2772e9CF7519790d96624", 18, "SX", "SX Network");
 
 export const POOLS: Record<string, PoolMetadata> = {
-  WBTC:  { addr: "0x99ac8cA7087fA4A2A1FB6357269965A2014ABc35", dec0: 6,  dec1: 8, token0: USDC_TOKEN, token1: WBTC_TOKEN, invert: true  }, // USDC / WBTC
   WETH:  { addr: "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8", dec0: 6,  dec1: 18, token0: USDC_TOKEN, token1: WETH_TOKEN, invert: true  }, // USDC / ETH
   USDC: { addr: "0x3416cf6c708da44db2624d63ea0aaef7113527c6", dec0: 6,  dec1: 6, token0: USDC_TOKEN, token1: USDT_TOKEN, invert: false }, // USDC / USDT (price ≈1)
-  USDT: { addr: "0x3416cf6c708da44db2624d63ea0aaef7113527c6", dec0: 6,  dec1: 6, token0: USDT_TOKEN, token1: USDC_TOKEN, invert: false }, // same pool, mirror asset
   SX:   { addr: "0xCb3b931E1e02C26399aCc651bFD9c8c4385EECd0", dec0: 18, dec1: 6, token0: USDC_TOKEN, token1: WSX_TOKEN, invert: false }, // USDC / SX
 };
