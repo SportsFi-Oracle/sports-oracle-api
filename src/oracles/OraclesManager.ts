@@ -9,6 +9,7 @@ const ORACLE_ABI = [
 
 export class OracleManager {
   private signer = getSigner(PRIVATE_KEY);
+  private _lastUpdated: number = 0;
   private oracleContract: Contract;
   private oracles: Record<string, UniswapOracle> = {};
 
@@ -18,6 +19,10 @@ export class OracleManager {
     for (const asset in POOLS) {
       this.oracles[asset] = new UniswapOracle(asset, POOLS[asset]);
     }
+  }
+
+  public getLastUpdated(): string {
+    return new Date(this._lastUpdated).toISOString();
   }
 
   public getOracles(): Record<string, UniswapOracle> {
