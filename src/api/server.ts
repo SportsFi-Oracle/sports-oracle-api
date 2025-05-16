@@ -48,18 +48,18 @@ app.get("/api/prices", async (req: Request, res: Response) => {
       );
   
       // If your on-chain oracle contract supports a lastUpdated() method, try to retrieve it
-      let lastUpdated = null;
-      try {
-        // For example, if you would call oracleContract.lastUpdated() from your OracleManager.
-        // (You may need to add a getter in OracleManager if oracleContract is private.)
-        lastUpdated = await oracleManager['oracleContract'].lastUpdated();
-        lastUpdated = new Date(Number(lastUpdated) * 1000).toISOString();
-      } catch (err: any) {
-        console.error("Error fetching last update timestamp:", err.message);
-        lastUpdated = "Error fetching timestamp";
-      }
+      // let lastUpdated = null;
+      // try {
+      //   // For example, if you would call oracleContract.lastUpdated() from your OracleManager.
+      //   // (You may need to add a getter in OracleManager if oracleContract is private.)
+      //   lastUpdated = await oracleManager['oracleContract'].lastUpdated();
+      //   lastUpdated = new Date(Number(lastUpdated) * 1000).toISOString();
+      // } catch (err: any) {
+      //   console.error("Error fetching last update timestamp:", err.message);
+      //   lastUpdated = "Error fetching timestamp";
+      // }
   
-      res.json({ prices, lastUpdated });
+      res.json({ prices });
     } catch (error: any) {
       console.error("Error in /api/prices:", error.message);
       res.status(500).json({ error: "Failed to fetch prices" });
