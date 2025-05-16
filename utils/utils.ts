@@ -3,7 +3,7 @@ import { RPC_URL } from "./config";
 import { Token } from "@uniswap/sdk-core";
 
 export const readProvider = new ethers.JsonRpcProvider(RPC_URL);
-export const writeProvider = new ethers.JsonRpcProvider(RPC_URL); // Adjust if different network
+export const writeProvider = new ethers.JsonRpcProvider("https://rpc.toronto.sx.technology"); // Adjust if different network
 export const getSigner = (privateKey: string) => new ethers.Wallet(privateKey, writeProvider);
 
 export interface PoolMetadata {
