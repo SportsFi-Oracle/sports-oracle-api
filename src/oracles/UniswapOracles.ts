@@ -1,6 +1,8 @@
+import JSBI from 'jsbi'
 import { Contract } from "ethers";
-import { FeeAmount, Pool, tickToPrice } from "@uniswap/v3-sdk";
+import invariant from 'tiny-invariant'
 import { Price, Token } from '@uniswap/sdk-core'
+import { FeeAmount, Pool, tickToPrice } from "@uniswap/v3-sdk";
 import IUniswapV3PoolABI from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import { Observation, PoolMetadata, readProvider } from "../../utils/utils";
 import { ORACLE_CONTRACT_ADDRESS } from "../../utils/config";
@@ -12,18 +14,18 @@ import { ORACLE_CONTRACT_ADDRESS } from "../../utils/config";
 export class UniswapOracle {
   public poolContract: Contract;
   public timeInterval: number;
+  static MIN_TICK: number = -887272
+  static MAX_TICK: number = -this.MIN_TICK;
   
   constructor(public asset: string, public metadata: PoolMetadata) {
     this.poolContract = new Contract(metadata.addr, IUniswapV3PoolABI.abi, readProvider);
-    this.timeInterval = 108 // uniswap default of 108 second time interval
+    this.timeInterval = 5 // uniswap default of 108 second time interval
   }
 
   private async _observe(secondsAgo: number): Promise<Observation[]> {
     const timestamps = [0, secondsAgo]
-  
     const [tickCumulatives, secondsPerLiquidityCumulatives] =
-      await this.poolContract.observe(timestamps)
-  
+      await this.poolContract.observe(timestamps)    
     const observations: Observation[] = timestamps.map((time, i) => {
       return {
         secondsAgo: time,
@@ -69,20 +71,23 @@ export class UniswapOracle {
       this.metadata.token0,
       this.metadata.token1,
       FeeAmount.MEDIUM, // hard coding medium fee amount for standardization, but this can be changed
-      slot0.sqrtPriceX96,
-      liquidity,
-      slot0.tick
+      Number(slot0.sqrtPriceX96),
+      Number(liquidity),
+      Number(slot0.tick)
     )
   
     const twap = this._calculateTWAP(observations, pool)
     const twal = this._calculateTWAL(observations)
-  
     return { twap, twal }
   }
 
   //** @return returns the latest price in USDC decimal notation */
   public async getLatestPriceInUsd(): Promise<number> {
-    return 0;
+    const { twap, twal } = await this.getAverages()
+    console.log(`VALUE: '1.0 ' ${twap.quoteCurrency.symbol}' = ' ${twap.invert().toSignificant(6)}' ' ${twap.baseCurrency.symbol}`)
+    let latestPrice: number = Number(twap.invert().toSignificant(6));
+    console.log(`Latest Price: ${latestPrice}`)
+    return latestPrice;
   }
 }
 
