@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": " RPC_URL='https://eth.llamarpc.com' ts-node src/index.ts",
+    "start:api": "RPC_URL='https://eth.llamarpc.com' ts-node src/api/server.ts",
     "dev": "ts-node src/index.ts",
     "serve": "node dist/bundle.cjs",
     "build": "tsc",
@@ -14,6 +15,7 @@
   "author": "kamto",
   "license": "ISC",
   "dependencies": {
+    "@types/express": "^5.0.1",
     "@uniswap/sdk-core": "^7.7.2",
     "@uniswap/v3-core": "^1.0.1",
     "@uniswap/v3-sdk": "^3.25.2",
@@ -21,11 +23,12 @@
     "dotenv": "^16.5.0",
     "esbuild": "^0.24.2",
     "ethers": "^6.14.0",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "url": "^0.11.4",
     "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.18",
     "@types/node": "^22.15.18",
     "babel-loader": "^9.2.1",
     "chai": "^5.1.2",
