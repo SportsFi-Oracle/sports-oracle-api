@@ -20,6 +20,10 @@ export class OracleManager {
     }
   }
 
+  public getOracles(): Record<string, UniswapOracle> {
+    return this.oracles;
+  }
+
   // Format price to uint on-chain scale
   public toOnchainUint(price: number): BigNumberish {
     // Adjust conversion as needed; this uses toLocaleString to avoid scientific notation.
@@ -45,6 +49,7 @@ export class OracleManager {
 
   // Start periodic updates
   public start(): void {
+    console.log(`Running oracle manager... `)
     this.runCycle(); // initial run
     setInterval(() => this.runCycle(), TASK_INTERVAL_MS);
   }
